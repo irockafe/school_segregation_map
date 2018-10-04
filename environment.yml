@@ -12,12 +12,14 @@ dependencies:
   - certifi=2018.4.16=py36_0
   - cffi=1.11.5=py36h9745a5d_0
   - chardet=3.0.4=py36h0f667ec_1
+  - cloudpickle=0.5.6=py36_0
   - conda=4.5.4=py36_0
   - conda-env=2.6.0=h36134e3_1
   - constantly=15.1.0=py36h28b3542_0
   - cryptography=2.2.2=py36h14c3975_0
   - dbus=1.13.2=h714fa37_1
   - decorator=4.3.0=py36_0
+  - doit=0.31.1=py36_0
   - entrypoints=0.2.3=py36_2
   - expat=2.2.5=he0dffb1_0
   - fontconfig=2.13.0=h9420a91_0
@@ -74,6 +76,7 @@ dependencies:
   - pycosat=0.6.3=py36h0a5515d_0
   - pycparser=2.18=py36hf9f622e_1
   - pygments=2.2.0=py36_0
+  - pyinotify=0.9.6=py36_0
   - pyopenssl=18.0.0=py36_0
   - pyqt=5.9.2=py36h22d08a2_0
   - pysocks=1.6.8=py36_0
