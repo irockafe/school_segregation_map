@@ -1,8 +1,11 @@
 version: '3'
 
 services:
-        school_seg:
-                image: school_seg
+        project:
+                build: .
+                # could put context: https://github.com/path/to/github/repo
+                # image: school_seg:1 # will pull from dockerhub unless build is also specified
                 volumes:
-                        - .:/home/
-
+                        - ./:/home/code/
+                ports:
+                        - "8888:8888"
