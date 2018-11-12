@@ -22,10 +22,12 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.4-Linux-x86_
 
 # Then get packages needed for installation i.e. conda install things
 # or npm install things
-COPY environment.yml .
-RUN conda env create -f ./environment.yml
+COPY environment.yml ./project/
+RUN conda env create -f ./project/environment.yml
 
 # set up so that the command "jupyter-notebook" will run 
 # without typing a buncha mumbojumbo
+# How to source hte bashrc file without having to run it?
 RUN echo "alias jupyter-notebook='jupyter-notebook --no-browser --ip=0.0.0.0 --allow-root'" >> .bashrc 
-RUN ["bash", "-c", "source /home/.bashrc"]
+RUN echo "PYTHONPATH=$PYTHONPATH:/home/project/code" >> .bashrc
+RUN ["/bin/bash", "-c", "source /home/.bashrc"]

@@ -7,6 +7,7 @@ dependencies:
   - attrs=18.1.0=py36_0
   - automat=0.7.0=py36_0
   - backcall=0.1.0=py36_0
+  - blas=1.0=mkl
   - bleach=2.1.4=py36_0
   - ca-certificates=2018.03.07=0
   - certifi=2018.4.16=py36_0
@@ -33,6 +34,7 @@ dependencies:
   - icu=58.2=h9c2bf20_1
   - idna=2.6=py36h82fb2a8_1
   - incremental=17.5.0=py36_0
+  - intel-openmp=2019.0=118
   - ipykernel=4.8.2=py36_0
   - ipython=6.5.0=py36_0
   - ipython_genutils=0.2.0=py36_0
@@ -48,19 +50,27 @@ dependencies:
   - libedit=3.1.20170329=h6b74fdf_2
   - libffi=3.2.1=hd88cf55_4
   - libgcc-ng=7.2.0=hdf63c60_3
+  - libgfortran-ng=7.3.0=hdf63c60_0
   - libpng=1.6.34=hb9fc6fc_0
   - libsodium=1.0.16=h1bed415_0
   - libstdcxx-ng=7.2.0=hdf63c60_3
   - libuuid=1.0.3=h1bed415_2
   - libxcb=1.13=h1bed415_1
   - libxml2=2.9.8=h26e45fe_1
+  - line_profiler=2.1.2=py36h14c3975_0
   - markupsafe=1.0=py36h14c3975_1
   - mistune=0.8.3=py36h14c3975_1
+  - mkl=2019.0=118
+  - mkl_fft=1.0.4=py36h4414c95_1
+  - mkl_random=1.0.1=py36h4414c95_1
   - nbconvert=5.3.1=py36_0
   - nbformat=4.4.0=py36_0
   - ncurses=6.1=hf484d3e_0
   - notebook=5.6.0=py36_0
+  - numpy=1.15.0=py36h1b885b7_0
+  - numpy-base=1.15.0=py36h3dfced4_0
   - openssl=1.0.2o=h20670df_0
+  - pandas=0.23.4=py36h04863e7_0
   - pandoc=2.2.3.2=0
   - pandocfilters=1.4.2=py36_1
   - parso=0.3.1=py36_0
@@ -68,6 +78,7 @@ dependencies:
   - pexpect=4.6.0=py36_0
   - pickleshare=0.7.4=py36_0
   - pip=10.0.1=py36_0
+  - proj4=5.0.1=h14c3975_0
   - prometheus_client=0.3.1=py36h28b3542_0
   - prompt_toolkit=1.0.15=py36_0
   - ptyprocess=0.6.0=py36_0
@@ -78,16 +89,19 @@ dependencies:
   - pygments=2.2.0=py36_0
   - pyinotify=0.9.6=py36_0
   - pyopenssl=18.0.0=py36_0
+  - pyproj=1.9.5.1=py36h7b21b82_1
   - pyqt=5.9.2=py36h22d08a2_0
   - pysocks=1.6.8=py36_0
   - python=3.6.5=hc3d631a_2
   - python-dateutil=2.7.3=py36_0
+  - pytz=2018.5=py36_0
   - pyzmq=17.1.2=py36h14c3975_0
   - qt=5.9.6=h52aff34_0
   - qtconsole=4.4.1=py36_0
   - readline=7.0=ha6073c6_4
   - requests=2.18.4=py36he2e5f8d_1
   - ruamel_yaml=0.15.37=py36h14c3975_2
+  - scipy=1.1.0=py36hc49cb51_0
   - send2trash=1.5.0=py36_0
   - service_identity=17.0.0=py36h28b3542_0
   - setuptools=39.2.0=py36_0
@@ -106,6 +120,7 @@ dependencies:
   - webencodings=0.5.1=py36_1
   - wheel=0.31.1=py36_0
   - widgetsnbextension=3.4.0=py36_0
+  - xlrd=1.1.0=py36_1
   - xz=5.2.4=h14c3975_4
   - yaml=0.1.7=had09818_2
   - zeromq=4.2.5=hf484d3e_1
@@ -113,4 +128,3 @@ dependencies:
   - zope=1.0=py36_0
   - zope.interface=4.5.0=py36h14c3975_0
 prefix: /opt/conda/envs/seg_map
-
