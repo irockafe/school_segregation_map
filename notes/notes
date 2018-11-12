@@ -1,0 +1,38 @@
+28/08/18
+Figured out how to use docker compose today and how to share volumes
+
+- try committing files within the container, pulling them locally. Pushing locally, pulling in container
+- Figure out how to enter bash shell in container using docker-compose. The CL command is really long otherwise -- probably using "docker-compose run"
+
+*-----
+29/08/18
+with docker-compose.yml, can run interactive shell using
+$ sudo docker-compose run {service_name} {shell}
+$ sudo docker-compose run project /bin/bash
+
+Now to make sure jupyter is accessible...
+$ sudo docker-compose run --service-port project /bin/bash
+or expose ports directly 
+$ sudo docker-compose run -p 8888:8888 project /bin/bash
+
+You must source a .bashrc within the container for it to work - doesn't happen if in dockerfile only
+
+OUTCOMES
+I was having hard time echo-ing to a .bashrc file that was in /home/ because
+/home/ was also a volume linked to my local machine. Apparently all the Dockerfile
+commands happen (creating my .bashrc), then the volume is linked, erasing any new
+files I put in /home/(unlinked), which becomes /home/(linked)
+
+*---------
+04/10/18
+Set up pydoit, template dodo.py file and environment. Found the location of all the data for download
+
+*------------
+16/10/18
+Figured out how to convert lat/lon coordinates into 3D cartesian ones using pyproj. Wrote the baseline code for it in code/organize_data.py Still need to update it and put it in a way that's easy for pydoit to run the stuff :)
+
+TODO: 
+  - convert all lat/lon to (x,y,z) cartesian coordinates linked to NCESSCH id
+  - Create kd-tree of x,y,z points, then search it by designated distance.
+      - Might be able to do this on the fly, might have to pre-compute some values, do it on the fly first.
+  - Figure out the segregation of given schools using stat-test, and the student population breakdown from the kd-tree
