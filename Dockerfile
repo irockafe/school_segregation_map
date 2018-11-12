@@ -2,7 +2,6 @@
 FROM python:3
 LABEL maintainer="Isaac Rockafellow <isaac.rockafellow@gmail.com>"
 WORKDIR /home/
-#SHELL ["/bin/bash", "-c"]
 
 # Go from least-often changed to most often changed, i.e.
 #First get OS packages you want - apt-get install everything you need
@@ -22,13 +21,23 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.4-Linux-x86_
 
 # Then get packages needed for installation i.e. conda install things
 # or npm install things
-COPY environment.yml ./project/
-RUN conda env create -f ./project/environment.yml
+COPY environment.yml ./
+RUN conda env create -f ./environment.yml
 # Enter the env from environment.yml on startup
-RUN awk '/name:/ {print $2}' ./project/environment.yml | xargs echo 'source activate' >> ~/.bashrc
+# Make the commands from the conda env accessible
+
+#ENV PATH /opt/conda/envs/$(head -1 ./environment.yml | cut -d ' ' -f2)/bin:$PATH
+#ENV PATH /opt/conda/envs/$(awk '/name:/ {print $2}' ./environment.yml)/bin:$PATH
+#ENV PATH /opt/conda/envs/$(awk '/name:/ {print $2}' ./environment.yml)/bin:$PATH
+# ENV PATH /opt/conda/envs/seg_map/bin/:$PATH
 # set up so that the command "jupyter-notebook" will run 
 # without typing a buncha mumbojumbo
 # How to source hte bashrc file without having to run it?
+SHELL ["/bin/bash", "-c"]
 RUN echo "alias jupyter-notebook='jupyter-notebook --no-browser --ip=0.0.0.0 --allow-root'" >> ~/.bashrc 
-RUN echo "PYTHONPATH=$PYTHONPATH:/home/project/code" >> ~/.bashrc
-RUN ["/bin/bash", "-c", "source /home/.bashrc"]
+RUN echo "PYTHONPATH=$PYTHONPATH:/home/code" >> ~/.bashrc
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc 
+# Star the environment. Might be unecessary..?
+RUN awk '/name:/ {print $2}' ./environment.yml | xargs echo 'source activate' >> ~/.bashrc
+CMD source activate $(awk '/name:/ {print $2}' ./environment.yml) && doit 2>&1 > doit.log
+#ENV PATH /opt/conda/envs/seg_map/bin/:$PATH
