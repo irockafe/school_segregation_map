@@ -6,6 +6,6 @@ services:
                 # could put context: https://github.com/path/to/github/repo
                 # image: school_seg:1 # will pull from dockerhub unless build is also specified
                 volumes:
-                        - ./:/home/project/
+                        - ./:/home/
                 ports:
                         - "8888:8888"
