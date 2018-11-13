@@ -9,8 +9,8 @@ import pathlib
 import time
 import argparse
 import sys
-if '/home/project/code' not in sys.path:
-    sys.path.append('/home/project/code')
+if '/home/code' not in sys.path:
+    sys.path.append('/home/code')
 import analyze_segregation
 
 
@@ -70,13 +70,13 @@ parser.add_argument('-r', '--radius',
 args = parser.parse_args()
 
 # Get the data and kd_tree
-raw_data_path = '/home/project/data/organized_data.pkl'
-kd_tree_path = '/home/project/data/school_distances_kdTree.pkl'
+raw_data_path = '/home/data/organized_data.pkl'
+kd_tree_path = '/home/data/school_distances_kdTree.pkl'
 data = pickle.load(open(raw_data_path, 'rb'))
 kd_tree = pickle.load(open(kd_tree_path, 'rb'))
 
 # Define columns where racial counts are held
-data_path = pathlib.Path('/home/project/data')
+data_path = pathlib.Path('/home/data')
 races = ['AM', 'AS', 'HI', 'BL', 'WH', 'HP', 'TR']
 number_grades = ['0%s' % i for i in range(1,10)] + ['%s' % i for i in range(10,14)]
 grades = ['KG'] + number_grades

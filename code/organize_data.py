@@ -20,7 +20,7 @@ def latlon_to_3d_coordinates(lat, lon, alt):
 
 
 # Go up one directory into data directory
-data_path = (pathlib.Path('/home/project/data'))
+data_path = (pathlib.Path('/home/data'))
 
 # Combine the race, location, and school lunch data
 df_race = (pd.read_csv(data_path / 'ccd_sch_052_1516_w_2a_011717.csv',

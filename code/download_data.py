@@ -16,8 +16,9 @@ def dload_unzip(url, data_path):
     zip_file.extractall(data_path)                            
     zip_file.close()                                          
 
-data_path = (pathlib.Path('/home/project/data'))
-                    
+data_path = (pathlib.Path('/home/data'))
+if not data_path.exists():
+    pathlib.mkdir(data_path)
 # Get the location data
 loc_url = ('https://nces.ed.gov/programs/edge/data/' +
            'EDGE_GEOCODE_PUBLICSCH_1516.zip')
