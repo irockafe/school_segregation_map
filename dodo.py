@@ -11,6 +11,9 @@ PATH = pathlib.Path().absolute()
 RADII = [1, 2.5, 5, 7.5]
 DATA_PATH = PATH / 'data'
 CODE_PATH = PATH / 'code'
+LOG_PATH = PATH / 'logs'
+if not LOG_PATH.exists():
+    pathlib.mkdir(LOG_PATH)
 
 def task_download_data():
     # run download_data.py:
@@ -21,7 +24,7 @@ def task_download_data():
                     'EDGE_GEOCODE_PUBLICSCH_1516.xlsx'
                     ],
         'file_dep': ['code/download_data.py'],
-        'actions': ['python code/download_data.py'],
+        'actions': ['python code/download_data.py 2>&1 > %s' % (LOG_PATH / 'download_data.log')],
         'name': 'download_data'
           }
 
@@ -33,7 +36,7 @@ def task_organize_data():
        'targets': ['data/organized_data.pkl',  # dataframe with all info
                    'data/school_distances_kdTree.pkl'],  # kd-tree of distances 
        'file_dep': ['code/organize_data.py'],
-       'actions': ['python code/organize_data.py'],
+       'actions': ['python code/organize_data.py 2>$1 > %s' % (LOG_PATH / 'organize_data.log'],
        'name': 'organize_data'
     }
  
@@ -51,7 +54,9 @@ def task_process_data():
             'file_dep':[CODE_PATH / 'process_data.py',
                         'data/organized_data.pkl',
                         'data/school_distances_kdTree.pkl'],
-            'actions':['python code/process_data.py --radius %s' % radius],
+            'actions':['python code/process_data.py --radius {rad} 2>&1 > {path}'.format(rad=radius, 
+                path=(LOG_PATH / 'process_data_{rad}_miles'.format(rad=radius))
+                )],
             'name': 'find_neighboring_schools_{radius}'.format(radius=radius)
         }
 
