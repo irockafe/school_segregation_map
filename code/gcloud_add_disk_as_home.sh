@@ -22,4 +22,4 @@ sudo cp /etc/fstab /etc/fstab.bak
 DISK=$(sudo blkid -s UUID -o value /dev/sdb)
 echo "UUID=$DISK /home ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
 # Check what's in there
-cat /etc/
+cat /etc/fstab
