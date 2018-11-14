@@ -1,0 +1,4 @@
+- Seems like there's some SpEd and ELL data I'm missing, according to master layout. Could use it to filter out (or separately analyze) SpEd schools, which tend to be small and might throw off calculations
+https://nces.ed.gov/ccd/xls/Master_Layout_2015-16_CCD_LEA-Level_Data_10.12.17.xlsx
+
+-
