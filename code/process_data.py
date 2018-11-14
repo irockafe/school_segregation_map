@@ -1,6 +1,19 @@
 # Convert a big-ass spreadsheet of racial data into 
 # a dictionary containing racial breakdowns (count and proportion)
-# for all schools within a given radius of centered school.
+# and free-reduced lunch breakdwons.
+# Racial breakdowns find
+# all schools that are BOTH within a given radius from the school.
+# AND share at least one grade in common with that school.
+# The racial comparisons are then only made on grades present in the school
+# that is the center of radius (the school_id that is the dictionary key)
+# In my mind there's no reason to compare a high school to an elementary
+# b/c that info is not actionable (can't integrate a high school with 
+# kids from elementrary school - also, bad-90s baby-genius screenplay)
+#
+# NOTE the racial comparisons are only between shared grades, but 
+# Lunch data isn't disaggregated by grade, so that is school-wide
+# Could muck with the analysis a bit, going to include a key with
+# all the races from a school, not just those with same grades
 
 import pickle
 import pandas as pd
@@ -27,14 +40,21 @@ def count_races(raw_race_data, school_id):
     return racial_counts
 
 
-def get_regional_breakdown(data, raw_race_data, all_race_columns):
-    # data - is the dataframe with everything in t for the School() object
+def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_schools):
+    # data - is the dataframe with everything in it (for the School() object and finding lunch
     # race_data is data from all the columns for racial groups in each grade
     # all_race_columns is all the columns in race_data
-    race_breakdown_region_all_schools = {'radius': radius, 'raw_race_data': {},
-                                        'racial_counts_data': {}}
+    race_breakdown_region_all_schools = {'radius': radius, 
+                                        'race_counts_all_neighbors': {},
+                                        'race_proportions_all_neighbors': {},
+                                        'race_counts_shared_grades': {},
+                                        'race_proportions_shared_grades': {},
+                                        'school_disimilarity_shared_grades': {},
+                                        'raw_lunch_data': {},
+                                        'lunch_proportions':{}}
     t1 = time.time()
-    kd_tree = None  # placeholder b/c don't need it in the object
+    kd_tree = None  # placeholder b/c don't need it in the School() object
+    lunch_data_all = data[['TOTAL', 'TOTFRL', 'FRELCH', 'REDLCH']]
     for i, school_id in enumerate(data.index):
         if (i+1) % 5000 == 0:
             print('{num} loops took {t:.3f}'.format(
@@ -46,21 +66,49 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns):
         race_grade_cols = pd.Index([])
         for grade in grades_served:
             race_grade_cols = race_grade_cols.union(all_race_columns[all_race_columns.str.contains(grade)])
-        #print('race grdae columns\n', race_grade_cols)
 
-        # get race data for all neighbors only for the grades served by current target school
+        # get race data for all neighbors of current school_id
+        # Neighbors are any schools within radius
+        # we drop those that don't share any grades later, when creating race_data
         neighbor_ids = raw_race_data.iloc[all_nearby_schools[i],:].index
-        #print(neighbors)
+        race_data_all_grades = (raw_race_data.loc[neighbor_ids,:])
+        race_counts_all_neighbors = count_races(race_data_all_grades, school_id)
+        race_proportions_all_neighbors = race_counts_all_neighbors.div(
+                race_counts_all_neighbors.sum(axis=1), axis=0)
+        race_breakdown_region_all_schools['race_counts_all_neighbors'][school_id] = race_counts_all_neighbors
+        race_breakdown_region_all_schools['race_proportions_all_neighbors'][school_id] = race_proportions_all_neighbors
+        '''
         # This is about 3x faster than doing .loc[row, column]. not sure why
+        # The dropna will remove any neighbors that don't have grades in common with school_id
         race_data = (raw_race_data.loc[neighbor_ids, :]
                      .loc[:,race_grade_cols]
                      .dropna(axis=0, how='all')
                     )
+        '''
+        # The dropna will remove any neighbors that don't have grades in common with school_id
+        # b/c race_grade_cols only contains columns that contain grades in school_id
+        race_data = (race_data_all_grades.loc[:, race_grade_cols]
+                                        .dropna(axis=0, how='all')
+                     )
         #print(race_data)
         # Count up each racial group
         race_counts = count_races(race_data, school_id)
-        race_breakdown_region_all_schools['raw_race_data'][school_id] = race_data
-        race_breakdown_region_all_schools['racial_counts_data'][school_id] = race_counts
+        race_proportions = race_counts.div(race_counts.sum(axis=1), axis=0)
+        disimilarity_shared_grades = ((race_proportions.loc[school_id] - race_proportions)
+                .drop(index=school_id))
+        race_breakdown_region_all_schools['race_counts_shared_grades'][school_id] = race_counts
+        race_breakdown_region_all_schools['race_proportions_shared_grades'][school_id] = race_proportions
+        race_breakdown_region_all_schools['school_disimilarity_shared_grades'][school_id] = disimilarity_shared_grades
+
+        ## Lunch data
+        # Again, implicitly select only schools with at least one grade in common
+        lunch_data_counts = (lunch_data_all.loc[race_data.index,:])
+        # TOTAL is the column with all the students
+        lunch_data_proportions = (lunch_data_counts.div(lunch_data_counts['TOTAL'],axis=0)
+                                                    .drop(columns=['TOTAL'])
+                                                    )
+        race_breakdown_region_all_schools['raw_lunch_data'][school_id] = lunch_data_counts
+        race_breakdown_region_all_schools['lunch_proportions'][school_id] = lunch_data_proportions
     return race_breakdown_region_all_schools
 
 
@@ -100,6 +148,6 @@ except FileNotFoundError:
         Generating it now...''' % radius)
 
 raw_race_data = data[all_race_columns]
-output = get_regional_breakdown(data, raw_race_data, all_race_columns )
+output = get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_schools)
 filename = 'regional_racial_compositions_%s_miles.pkl' % radius
 pickle.dump(output, open(data_path / filename, 'wb'))
