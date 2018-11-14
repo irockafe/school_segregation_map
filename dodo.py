@@ -8,13 +8,12 @@ DOIT_CONFIG = {'check_file_uptodate': 'timestamp',
 # Assume baseline path is where dodo.py is located
 PATH = pathlib.Path().absolute() 
 # Number of miles around which to search for neighboring schools
-RADII = [1, 2.5, 5, 7.5]
+RADII = [1, 2.5, 5, 7.5, 15, 20]
 DATA_PATH = PATH / 'data'
 CODE_PATH = PATH / 'code'
 LOG_PATH = PATH / 'logs'
 if not LOG_PATH.exists():
-    pathlib.mkdir(LOG_PATH)
-
+    LOG_PATH.mkdir()
 def task_download_data():
     # run download_data.py:
     yield {
@@ -24,7 +23,7 @@ def task_download_data():
                     'EDGE_GEOCODE_PUBLICSCH_1516.xlsx'
                     ],
         'file_dep': ['code/download_data.py'],
-        'actions': ['python code/download_data.py 2>&1 > %s' % (LOG_PATH / 'download_data.log')],
+        'actions': ['python code/download_data.py &> %s' % (LOG_PATH / 'download_data.log')],
         'name': 'download_data'
           }
 
@@ -36,7 +35,7 @@ def task_organize_data():
        'targets': ['data/organized_data.pkl',  # dataframe with all info
                    'data/school_distances_kdTree.pkl'],  # kd-tree of distances 
        'file_dep': ['code/organize_data.py'],
-       'actions': ['python code/organize_data.py 2>$1 > %s' % (LOG_PATH / 'organize_data.log'],
+       'actions': ['python code/organize_data.py &> %s' % (LOG_PATH / 'organize_data.log')],
        'name': 'organize_data'
     }
  
@@ -46,7 +45,9 @@ def task_process_data():
         {'radius': radius, 'raw_race_data': {school_id: data},
         'racial_counts_data': {school_id: data}}
     '''
+    # Using floats to match with process_data, which names files with floats
     for radius in RADII:
+        radius = float(radius)
         yield {
             'targets':[DATA_PATH / ('all_schools_within_%s_miles.pkl' % radius),
                        DATA_PATH / ('regional_racial_compositions_%s_miles.pkl' 
@@ -54,7 +55,7 @@ def task_process_data():
             'file_dep':[CODE_PATH / 'process_data.py',
                         'data/organized_data.pkl',
                         'data/school_distances_kdTree.pkl'],
-            'actions':['python code/process_data.py --radius {rad} 2>&1 > {path}'.format(rad=radius, 
+            'actions':['python code/process_data.py --radius {rad} &> {path}'.format(rad=radius, 
                 path=(LOG_PATH / 'process_data_{rad}_miles'.format(rad=radius))
                 )],
             'name': 'find_neighboring_schools_{radius}'.format(radius=radius)
