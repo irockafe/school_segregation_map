@@ -39,5 +39,8 @@ RUN echo "PYTHONPATH=$PYTHONPATH:/home/code" >> ~/.bashrc
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc 
 # Star the environment. Might be unecessary..?
 RUN awk '/name:/ {print $2}' ./environment.yml | xargs echo 'source activate' >> ~/.bashrc
+# Update the conda env so we don't have to re-build the container every time 
+# we need a new pacakge
+CMD conda env update -f ./environment.yml
 CMD source activate $(awk '/name:/ {print $2}' ./environment.yml) && doit 2>&1 > doit.log
 #ENV PATH /opt/conda/envs/seg_map/bin/:$PATH

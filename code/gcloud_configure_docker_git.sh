@@ -29,10 +29,16 @@ sudo apt-get update
 wait
 sudo apt-get install docker-ce
 wait
+# Make the root directory for data storage in /home/
+# (the same place where data volume is mounted)
+# then restart it
+sudo sh -c 'echo {\"data-root\": \"/home/docker\"} >> /etc/docker/daemon.json'
+sudo systemctl stop docker && sudo systemctl start docker
 # Check that it works
 sudo docker run hello-world
 # Install docker-compose
 sudo curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+wait
 sudo chmod +x /usr/local/bin/docker-compose
 # Check that it works
 sudo docker-compose --version
