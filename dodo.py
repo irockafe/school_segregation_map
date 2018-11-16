@@ -14,6 +14,7 @@ CODE_PATH = PATH / 'code'
 LOG_PATH = PATH / 'logs'
 if not LOG_PATH.exists():
     LOG_PATH.mkdir()
+
 def task_download_data():
     # run download_data.py:
     yield {
@@ -40,25 +41,26 @@ def task_organize_data():
     }
  
 
-def task_process_data():
-    '''Go from a big shreadsheet into dictionary of 
-        {'radius': radius, 'raw_race_data': {school_id: data},
-        'racial_counts_data': {school_id: data}}
+def task_regional_breakdown():
+    '''
+    Get a xarray dataset, where each variable is a school, dims = school x race, 
+    and coordinates are school_id and racial group
     '''
     # Using floats to match with process_data, which names files with floats
     for radius in RADII:
         radius = float(radius)
         yield {
-            'targets':[DATA_PATH / ('all_schools_within_%s_miles.pkl' % radius),
-                       DATA_PATH / ('regional_racial_compositions_%s_miles.pkl' 
-                        % radius)],
-            'file_dep':[CODE_PATH / 'process_data.py',
+            'targets':[DATA_PATH / ('racial_composition_shared_grades_%s_miles.pkl' % radius),
+                       DATA_PATH / ('racial_composition_shared_grades%s_miles.pkl' % radius),
+                       DATA_PATH / ('lunch_data_shared_grades_%s_miles.pkl' % radius),
+                       DATA_PATH / ('lunch_data_all_neighbors_%s_miles.pkl' % radius)],
+            'file_dep':[CODE_PATH / 'regional_racial_breakdown.py',
                         'data/organized_data.pkl',
                         'data/school_distances_kdTree.pkl'],
-            'actions':['python code/process_data.py --radius {rad} &> {path}'.format(rad=radius, 
-                path=(LOG_PATH / 'process_data_{rad}_miles'.format(rad=radius))
+            'actions':['python code/regional_racial_breakdown.py --radius {rad} &> {path}'.format(rad=radius, 
+                path=(LOG_PATH / 'regional_racial_breakdown_{rad}_miles.log'.format(rad=radius))
                 )],
-            'name': 'find_neighboring_schools_{radius}'.format(radius=radius)
+            'name': 'regional_racial_breakdown{radius}'.format(radius=radius)
         }
 
 

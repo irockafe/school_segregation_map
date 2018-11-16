@@ -56,9 +56,6 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
     kd_tree = None  # placeholder b/c don't need it in the School() object
     lunch_data_all = data[['TOTAL', 'TOTFRL', 'FRELCH', 'REDLCH']]
     for i, school_id in enumerate(data.index):
-        if (i+1) % 5000 == 0:
-            print('{num} loops took {t:.3f}'.format(
-                            num=i+1, t=(time.time() - t1)))
         school = analyze_segregation.School(school_id, data, kd_tree)
         grades_served = school.grades_served().str.replace('G', '')
         #print(grades_served)
@@ -109,6 +106,10 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
                                                     )
         race_breakdown_region_all_schools['raw_lunch_data'][school_id] = lunch_data_counts
         race_breakdown_region_all_schools['lunch_proportions'][school_id] = lunch_data_proportions
+        if (i+1) % 5000 == 0:
+            print('{num} loops took {t:.3f}'.format(
+                            num=i+1, t=(time.time() - t1)))
+            print('\nWorking on %s' % school_id, '\nrace_proportions\n', race_proportions)
     return race_breakdown_region_all_schools
 
 
