@@ -77,7 +77,7 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
                      )
         # Count up each racial group
         race_counts = count_races(race_data, school_id)
-        race_breakdown_region_all_schools['race_counts_shared_grades'][str(school_id)] = xr.DataArray(race_counts, dims=['schools', 'races'], encoding={'dtype':'float64'})
+        race_breakdown_region_all_schools['race_counts_shared_grades'][str(school_id)] = xr.DataArray(race_counts, dims=['schools', 'races'])
         ## Lunch data
         # First, get lunch data from all neighboring schools
         lunch_data_all_neighbors = lunch_data_all.loc[race_data_all_grades.index,:]
@@ -90,9 +90,6 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
             print('{num} loops took {t:.3f}'.format(
                             num=i+1, t=(time.time() - t1)))
             print('\nWorking on %s' % school_id, '\nrace_proportions\n', race_proportions)
-        # Testing
-        if i == 3:
-            break
     return race_breakdown_region_all_schools
 
 
@@ -134,6 +131,7 @@ except FileNotFoundError:
 raw_race_data = data[all_race_columns]
 output = get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_schools)
 # Convert dict of xarrays to xr.Dataset
+# TODO lots of nan values, but not sure how they work yet, so for future script
 ds_shared_grades = xr.Dataset(output['race_counts_shared_grades'])
 ds_all_neighbors = xr.Dataset(output['race_counts_all_neighbors'])
 ds_lunch_shared_grades = xr.Dataset(output['lunch_data_shared_grades'])
