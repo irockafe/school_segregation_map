@@ -14,7 +14,8 @@
 # Lunch data isn't disaggregated by grade, so that is school-wide
 # Could muck with the analysis a bit, going to include a key with
 # all the races from a school, not just those with same grades
-
+import pathlib
+import logging
 import pickle
 import pandas as pd
 import numpy as np
@@ -23,6 +24,7 @@ import time
 import argparse
 import sys
 import xarray as xr
+# My code
 if '/home/code' not in sys.path:
     sys.path.append('/home/code')
 import analyze_segregation
@@ -56,7 +58,6 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
     for i, school_id in enumerate(data.index):
         school = analyze_segregation.School(school_id, data, kd_tree)
         grades_served = school.grades_served().str.replace('G', '')
-        #print(grades_served)
         # Given grades served, get all the columns containing race data
         race_grade_cols = pd.Index([])
         for grade in grades_served:
@@ -86,10 +87,9 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
         lunch_data_counts = (lunch_data_all.loc[race_data.index,:])
         # TOTAL is the column with all the students
         race_breakdown_region_all_schools['lunch_data_shared_grades'][str(school_id)] = xr.DataArray(lunch_data_counts, dims=['schools', 'lunch_status'])
-        if (i+1) % 5000 == 0:
-            print('{num} loops took {t:.3f}'.format(
+        if (i+1) % 100 == 0:
+            logging.info('{num} loops took {t:.3f}'.format(
                             num=i+1, t=(time.time() - t1)))
-            print('\nWorking on %s' % school_id, '\nrace_proportions\n', race_proportions)
     return race_breakdown_region_all_schools
 
 
@@ -97,12 +97,17 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-r', '--radius',
     help='Number of miles from school you want to search for other schools ')
 args = parser.parse_args()
+radius = float(args.radius)
 
 # Get the data and kd_tree
 raw_data_path = '/home/data/organized_data.pkl'
+log_path = pathlib.Path('/home/logs/')
 kd_tree_path = '/home/data/school_distances_kdTree.pkl'
 data = pickle.load(open(raw_data_path, 'rb'))
 kd_tree = pickle.load(open(kd_tree_path, 'rb'))
+
+# Logging
+logging.basicConfig(filename=log_path/('regional_racial_breakdown_%s_miles.log' % radius), level=logging.DEBUG, filemode='w')
 
 # Define columns where racial counts are held
 data_path = pathlib.Path('/home/data')
@@ -114,7 +119,6 @@ all_race_columns = pd.Index(['%s%s%s' % (race, grade, gender) for race in races
                             for gender in ['M', 'F']]
                      )
 
-radius = float(args.radius)
 mile2meter = 1609.34
 filename = 'all_schools_within_%s_miles.pkl' % radius
 # This should be done in a separate script so that pydoit can keep track of dependencies
@@ -125,10 +129,11 @@ except FileNotFoundError:
     all_nearby_schools = kd_tree.query_ball_tree(kd_tree, radius*mile2meter)
     # save to file
     pickle.dump(all_nearby_schools, open(data_path / filename, 'wb'))
-    print('''Couldnt find the nearby schools file - all_schools_within_%s_miles.pkl
+    logging.info('''Couldnt find the nearby schools file - all_schools_within_%s_miles.pkl
         Generating it now...''' % radius)
 
 raw_race_data = data[all_race_columns]
+#TODO - probably faster to convert everything to an xarray / dataset after the fact..?
 output = get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_schools)
 # Convert dict of xarrays to xr.Dataset
 # TODO lots of nan values, but not sure how they work yet, so for future script

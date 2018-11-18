@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from scipy import spatial
 import pickle
+import logging
 
 
 # TODO refactor this into organize_data.py that calls fxns from organize_fxns.py 
@@ -115,8 +116,18 @@ df = pd.concat([df, xyz_df], axis=1)
 # will be incorrect.
 # Create kd-tree to find all schools within certain distances
 kd_tree = spatial.KDTree(xyz_array)
-pickle.dump(kd_tree, open(data_path / 'school_distances_kdTree.pkl', 'wb'))
+kd_filename = data_path / 'school_distances_kdTree.pkl'
+pickle.dump(kd_tree, open(kd_filename, 'wb'))
 mile2meter = 1609.34
 
 # dump the data frame with organized_data
-pickle.dump(df, open(data_path / 'organized_data.pkl', 'wb'))
+organized_data_filepath = data_path / 'organized_data.pkl'
+pickle.dump(df, open(organized_data_filepath, 'wb'))
+
+# Do some logging
+log_path = pathlib.Path('/home/logs/')
+logging.basicConfig(filename=log_path / 'organize_data.log', 
+        level=logging.DEBUG)
+logging.log('kd_tree located at {file}'.format(file=kd_filename))
+logging.log('organized_data located at {file}'.format(
+    file=organized_data_filepath))
