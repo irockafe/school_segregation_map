@@ -42,5 +42,5 @@ RUN awk '/name:/ {print $2}' ./environment.yml | xargs echo 'source activate' >>
 # Update the conda env so we don't have to re-build the container every time 
 # we need a new pacakge
 CMD conda env update -f ./environment.yml
-CMD source activate $(awk '/name:/ {print $2}' ./environment.yml) && doit 2>&1 > doit.log
+CMD source activate $(awk '/name:/ {print $2}' ./environment.yml) && doit &> doit.log
 #ENV PATH /opt/conda/envs/seg_map/bin/:$PATH
