@@ -9,6 +9,9 @@ import logging
 
 # TODO refactor this into organize_data.py that calls fxns from organize_fxns.py 
 #   it'll look cleaner then
+log_path = pathlib.Path('/home/logs/')
+logging.basicConfig(filename=log_path / 'organize_data.log', 
+        level=logging.DEBUG)
 
 def latlon_to_3d_coordinates(lat, lon, alt):
     # lat, lon, and alt are numpy arrays
@@ -125,9 +128,6 @@ organized_data_filepath = data_path / 'organized_data.pkl'
 pickle.dump(df, open(organized_data_filepath, 'wb'))
 
 # Do some logging
-log_path = pathlib.Path('/home/logs/')
-logging.basicConfig(filename=log_path / 'organize_data.log', 
-        level=logging.DEBUG)
-logging.log('kd_tree located at {file}'.format(file=kd_filename))
-logging.log('organized_data located at {file}'.format(
+logging.info('kd_tree located at {file}'.format(file=kd_filename))
+logging.info('organized_data located at {file}'.format(
     file=organized_data_filepath))
