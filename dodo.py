@@ -1,14 +1,10 @@
 import pathlib
 import logging
-# My code
-import sys
-if '/home/code' not in sys.path:
-    sys.path.append('/home/code')
-import download_data
 
 logging.basicConfig(level=logging.DEBUG, 
-        handlers=[logging.StreamHandler(),
-            logging.FileHandler("doit.log", mode='w', delay=False)])
+        handlers=[logging.FileHandler("doit.log", mode='w', delay=False),
+            #logging.StreamHandler(stream=sys.stdout)
+            ])
 
 DOIT_CONFIG = {'check_file_uptodate': 'timestamp',
                'verbosity': 2,
@@ -43,8 +39,8 @@ def task_organize_data():
     yield {
        'targets': ['data/organized_data.pkl',  # dataframe with all info
                    'data/school_distances_kdTree.pkl'],  # kd-tree of distances 
-       'file_dep': ['code/organize_data.py'],
-       'actions': ['python code/organize_data.py'],
+       'file_dep': ['code/organize_data.py'], 
+       'actions': ['python code/organize_data.py &> %s' % (LOG_PATH / 'organize_data.log')],
        'name': 'organize_data'
     }
  
