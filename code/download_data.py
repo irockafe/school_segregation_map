@@ -24,7 +24,7 @@ log_path = pathlib.Path('/home/logs')
 if not log_path.exists():
     log_path.mkdir()
 logging.basicConfig(filename=log_path / 'download_data.log',
-        level=logging.DEBUG)
+        level=logging.DEBUG, filemode='w')
 # Get the location data
 loc_url = ('https://nces.ed.gov/programs/edge/data/' +
            'EDGE_GEOCODE_PUBLICSCH_1516.zip')
