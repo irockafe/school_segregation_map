@@ -18,6 +18,7 @@ dependencies:
   - conda-env=2.6.0=h36134e3_1
   - constantly=15.1.0=py36h28b3542_0
   - cryptography=2.2.2=py36h14c3975_0
+  - cycler=0.10.0=py36_0
   - dbus=1.13.2=h714fa37_1
   - decorator=4.3.0=py36_0
   - doit=0.31.1=py36_0
@@ -47,6 +48,7 @@ dependencies:
   - jupyter_client=5.2.3=py36_0
   - jupyter_console=5.2.0=py36_1
   - jupyter_core=4.4.0=py36_0
+  - kiwisolver=1.0.1=py36hf484d3e_0
   - libedit=3.1.20170329=h6b74fdf_2
   - libffi=3.2.1=hd88cf55_4
   - libgcc-ng=7.2.0=hdf63c60_3
@@ -59,6 +61,7 @@ dependencies:
   - libxml2=2.9.8=h26e45fe_1
   - line_profiler=2.1.2=py36h14c3975_0
   - markupsafe=1.0=py36h14c3975_1
+  - matplotlib=2.2.3=py36hb69df0a_0
   - mistune=0.8.3=py36h14c3975_1
   - mkl=2019.0=118
   - mkl_fft=1.0.4=py36h4414c95_1
@@ -74,6 +77,7 @@ dependencies:
   - pandoc=2.2.3.2=0
   - pandocfilters=1.4.2=py36_1
   - parso=0.3.1=py36_0
+  - patsy=0.5.1=py36_0
   - pcre=8.42=h439df22_0
   - pexpect=4.6.0=py36_0
   - pickleshare=0.7.4=py36_0
@@ -89,6 +93,7 @@ dependencies:
   - pygments=2.2.0=py36_0
   - pyinotify=0.9.6=py36_0
   - pyopenssl=18.0.0=py36_0
+  - pyparsing=2.3.0=py36_0
   - pyproj=1.9.5.1=py36h7b21b82_1
   - pyqt=5.9.2=py36h22d08a2_0
   - pysocks=1.6.8=py36_0
@@ -102,6 +107,7 @@ dependencies:
   - requests=2.18.4=py36he2e5f8d_1
   - ruamel_yaml=0.15.37=py36h14c3975_2
   - scipy=1.1.0=py36hc49cb51_0
+  - seaborn=0.9.0=py36_0
   - send2trash=1.5.0=py36_0
   - service_identity=17.0.0=py36h28b3542_0
   - setuptools=39.2.0=py36_0
@@ -109,6 +115,7 @@ dependencies:
   - sip=4.19.8=py36hf484d3e_0
   - six=1.11.0=py36h372c433_1
   - sqlite=3.23.1=he433501_0
+  - statsmodels=0.9.0=py36h035aef0_0
   - terminado=0.8.1=py36_1
   - testpath=0.3.1=py36_0
   - tk=8.6.7=hc745277_3
