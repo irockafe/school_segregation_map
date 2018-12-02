@@ -1,4 +1,10 @@
 - Seems like there's some SpEd and ELL data I'm missing, according to master layout. Could use it to filter out (or separately analyze) SpEd schools, which tend to be small and might throw off calculations
 https://nces.ed.gov/ccd/xls/Master_Layout_2015-16_CCD_LEA-Level_Data_10.12.17.xlsx
 
--
+- Replace the -1's and -9's in lunch data with nan
+- Filter by percentage of race in region. For each plot?
+
+- I don't think median is a good measure any more - if there are 5 schools, one segregated with black kids, the rest roughly the same, the median value will be close to zero. Should be working based on the min/max value?
+   - Median is good for identifying individual schools that are segregated, but won't ID the fact that there is a desegregatable school in the region, which I think is what I want..?
+
+- When I filter out races with too few members, it feels weird to completely ignore them - they're even excluded from percentage calculations. Should I calculate percents with the whole school, then filter out the small groups? Or just forget about it? (currently just forgetting about it) 
