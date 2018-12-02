@@ -77,7 +77,7 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
         race_data_all_grades = (raw_race_data.loc[neighbor_ids,:])
         race_counts_all_neighbors = count_races(race_data_all_grades, school_id)
         race_breakdown_region_all_schools['race_counts_just_school'][school_id] = race_counts_all_neighbors.loc[school_id]
-        race_breakdown_region_all_schools['race_counts_all_neighbors'][school_id] = race_counts_all_neighbors
+        race_breakdown_region_all_schools['race_counts_all_neighbors'][school_id] = race_counts_all_neighbors.drop(index=school_id)
         # The dropna will remove any neighbors that don't have grades in common with school_id
         # b/c race_grade_cols only contains columns that contain grades in school_id
         race_data = (race_data_all_grades.loc[:, race_grade_cols]
@@ -85,16 +85,16 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
                      )
         # Count up each racial group
         race_counts = count_races(race_data, school_id)
-        race_breakdown_region_all_schools['race_counts_shared_grades'][school_id] = race_counts
+        race_breakdown_region_all_schools['race_counts_shared_grades'][school_id] = race_counts.drop(index=school_id)
         ## Lunch data
         # First, get lunch data from all neighboring schools
         lunch_data_all_neighbors = lunch_data_all.loc[race_data_all_grades.index,:]
         race_breakdown_region_all_schools['lunch_data_just_school'][school_id] = lunch_data_all_neighbors.loc[school_id]
-        race_breakdown_region_all_schools['lunch_data_all_neighbors'][school_id] = lunch_data_all_neighbors
+        race_breakdown_region_all_schools['lunch_data_all_neighbors'][school_id] = lunch_data_all_neighbors.drop(index=school_id)
         # next, implicitly select only schools with at least one grade in common
         lunch_data_counts = (lunch_data_all.loc[race_data.index,:])
         # TOTAL is the column with all the students
-        race_breakdown_region_all_schools['lunch_data_shared_grades'][school_id] = lunch_data_counts
+        race_breakdown_region_all_schools['lunch_data_shared_grades'][school_id] = lunch_data_counts.drop(index=school_id)
         if (i+1) % 10000 == 0:
             logging.info('{num} loops took {t:.3f}'.format(
                             num=i+1, t=(time.time() - t1)))
