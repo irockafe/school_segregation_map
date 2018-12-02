@@ -32,6 +32,9 @@ import analyze_segregation
 
 
 def count_races(raw_race_data, school_id):
+    # There is a column with the sum for each school in the dataset
+    # This funciton is necessary if you want to compare only the grades
+    # shared by neighboring schools
     races = ['AM', 'AS', 'HI', 'BL', 'WH', 'HP', 'TR']
     racial_counts = pd.DataFrame(index=raw_race_data.index, columns=races)
     # raw_race_data = self.raw_race_data()
@@ -73,10 +76,8 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
         neighbor_ids = raw_race_data.iloc[all_nearby_schools[i],:].index
         race_data_all_grades = (raw_race_data.loc[neighbor_ids,:])
         race_counts_all_neighbors = count_races(race_data_all_grades, school_id)
-        race_breakdown_region_all_schools['race_counts_just_school'][school_id] = xr.DataArray(race_counts_all_neighbors.loc[school_id], dims=['races'])
-        # school_id must be string for netcdf to output it
-        race_breakdown_region_all_schools['race_counts_all_neighbors'][school_id] = xr.DataArray(race_counts_all_neighbors.drop(index=school_id), 
-                dims=['schools', 'races'])
+        race_breakdown_region_all_schools['race_counts_just_school'][school_id] = race_counts_all_neighbors.loc[school_id]
+        race_breakdown_region_all_schools['race_counts_all_neighbors'][school_id] = race_counts_all_neighbors
         # The dropna will remove any neighbors that don't have grades in common with school_id
         # b/c race_grade_cols only contains columns that contain grades in school_id
         race_data = (race_data_all_grades.loc[:, race_grade_cols]
@@ -84,19 +85,16 @@ def get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_sch
                      )
         # Count up each racial group
         race_counts = count_races(race_data, school_id)
-        race_breakdown_region_all_schools['race_counts_shared_grades'][school_id] = xr.DataArray(race_counts.drop(index=school_id),
-                dims=['schools', 'races'])
+        race_breakdown_region_all_schools['race_counts_shared_grades'][school_id] = race_counts
         ## Lunch data
         # First, get lunch data from all neighboring schools
         lunch_data_all_neighbors = lunch_data_all.loc[race_data_all_grades.index,:]
-        race_breakdown_region_all_schools['lunch_data_just_school'][school_id] = xr.DataArray(lunch_data_all_neighbors.loc[school_id], dims=['lunch_status'])
-        race_breakdown_region_all_schools['lunch_data_all_neighbors'][school_id] = xr.DataArray(lunch_data_all_neighbors.drop(index=school_id),
-                dims=['schools', 'lunch_status'])
+        race_breakdown_region_all_schools['lunch_data_just_school'][school_id] = lunch_data_all_neighbors.loc[school_id]
+        race_breakdown_region_all_schools['lunch_data_all_neighbors'][school_id] = lunch_data_all_neighbors
         # next, implicitly select only schools with at least one grade in common
         lunch_data_counts = (lunch_data_all.loc[race_data.index,:])
         # TOTAL is the column with all the students
-        race_breakdown_region_all_schools['lunch_data_shared_grades'][school_id] = xr.DataArray(lunch_data_counts.drop(index=school_id), 
-                dims=['schools', 'lunch_status'])
+        race_breakdown_region_all_schools['lunch_data_shared_grades'][school_id] = lunch_data_counts
         if (i+1) % 10000 == 0:
             logging.info('{num} loops took {t:.3f}'.format(
                             num=i+1, t=(time.time() - t1)))
@@ -143,43 +141,6 @@ except FileNotFoundError:
         Generating it now...''' % radius)
 
 raw_race_data = data[all_race_columns]
-#TODO - probably faster to convert everything to an xarray / dataset after the fact..?
 output = get_regional_breakdown(data, raw_race_data, all_race_columns, all_nearby_schools)
 fname = 'racial_composition_shared_grades_dict_%s_miles.pkl' % radius
 pickle.dump(output, open(data_path/fname, 'wb'))
-# TODO 
-# was having memory leaks when trying to convert to 
-# dataset. Let's just try to pickle the output file at first
-# I know it shouldn't be affected
-'''
-# Convert dict of xarrays to xr.Dataset
-# TODO lots of nan values, but not sure how they work yet, so for future script
-logging.info('Now convert dictionary of xarrays into dataset')
-ds_shared_grades = xr.Dataset(output['race_counts_shared_grades'])
-ds_all_neighbors = xr.Dataset(output['race_counts_all_neighbors'])
-ds_lunch_shared_grades = xr.Dataset(output['lunch_data_shared_grades'])
-ds_lunch_all_neighbors = xr.Dataset(output['lunch_data_all_neighbors'])
-
-# TODO get annoying error about casting int64 to int32, but no idea what refers to
-# when trying to dump as netcdf. pickling instead
-logging.info('pickling now')
-pickle.dump(ds_shared_grades, open(data_path / 
-    ('racial_composition_shared_grades_%s_miles.pkl' % radius), 'wb'),
-    protocol=-1)
-pickle.dump(ds_all_neighbors, open(data_path / 
-    ('racial_composition_all_neighbors_%s_miles.pkl' % radius), 'wb'),
-    protocol=-1)
-pickle.dump(ds_lunch_shared_grades, open(data_path / 
-    ('lunch_data_shared_grades_%s_miles.pkl' % radius), 'wb'),
-    protocol=-1)
-pickle.dump(ds_lunch_all_neighbors, open(data_path / 
-    ('lunch_data_all_neighbors_%s_miles.pkl' % radius), 'wb'),
-    protocol=-1)
-'''
-# ds_shared_grades.to_netcdf(str(data_path / ('racial_composition_shared_grades_%s_miles.cdf' % radius)))
-#ds_all_neighbors.to_netcdf(str(data_path / ('racial_composition_all_neighbors_%s_miles.cdf' % radius)))
-#ds_lunch_shared_grades.to_netcdf(str(data_path / ('lunch_data_shared_grades_%s_miles.cdf' % radius)))
-#ds_lunch_all_neighbors.to_netcdf(str(data_path / ('lunch_data_all_neighbors_%s_miles.cdf' % radius)))
-# TODO - pickle these and save them, then update dodo.py accordingly
-#filename = 'regional_racial_compositions_%s_miles.pkl' % radius
-#pickle.dump(output, open(data_path / filename, 'wb'))
