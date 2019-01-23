@@ -18,6 +18,7 @@ RADII = [1, 2.5, 5, 7.5, 10, 15, 20]
 DATA_PATH = PATH / 'data'
 CODE_PATH = PATH / 'code'
 LOG_PATH = PATH / 'logs'
+FIG_PATH = PATH / 'Figures'
 NEIGHBOR_DATA_FNAME = 'racial_composition_shared_grades_dict_%.1f_miles.pkl' 
 
 for path in [DATA_PATH, CODE_PATH, LOG_PATH]: 
@@ -94,6 +95,27 @@ def task_racial_percent_differences():
             'name': 'racial_percent_differences_{rad}'.format(
                 rad=radius)
             }
+
+
+def task_pvals_hypergeom():
+    for radius in RADII:
+        radius = float(radius)
+        neighbor_data_path = DATA_PATH / ('race_counts_neighbors_%s.pkl' % radius)
+        school_data_path = DATA_PATH / ('race_counts_schools_%s.pkl' % radius)
+        yield {
+                'targets': [DATA_PATH / ('segregation_pvals_%s.pkl' % radius),
+                    FIG_PATH / ('segregation_pvals_%s.pdf' % radius)],
+                'file_dep':[CODE_PATH / 'hypergeom_test_segregation.py',
+                    neighbor_data_path,
+                    school_data_path],
+                'actions':['python code/hypergeom_test_segregation.py -r {rad} \
+                        --neighbors {neighbor_path} \
+                        --school_data {sch_data}'.format(rad=radius,
+                            neighbor_path=neighbor_data_path, 
+                            sch_data=school_data_path)
+                        ],
+                'name': 'segregation_hypergeom_pvals_%s' % radius
+                }
 
 def task_analyze_data():
     # do some of the analysis of the data
