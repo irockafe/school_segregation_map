@@ -6,18 +6,12 @@ import time
 
 
 def pairwise_from_multiIndex(data):
-    df_idx = data.reset_index().drop(data.columns, axis=1)
-    schools = df_idx['central_school'].unique()
-    out = {}
-    for i, school in enumerate(schools):
-        # get neighboring schools
-        subset = df_idx[df_idx['central_school'] == school]
-        out[school] = subset['neighbors'].values
-        # Change any remaining entries for that school to zero
-        # so we don't double count
-        to_drop = np.where(df_idx['neighbors'] == school)
-        df_idx.iloc[to_drop] = 0
-    return out
+   df_idx = data.reset_index().drop(data.columns, axis=1)
+   vals = df_idx.values
+   # Sort each pair
+   vals.sort(axis=1)
+   # Get unique pairs
+   return np.unique(vals, axis=0)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--path', type=str,
