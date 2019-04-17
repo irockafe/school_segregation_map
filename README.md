@@ -14,6 +14,19 @@ Credit for the idea to:
   - [Rachel Cohen](https://www.theatlantic.com/education/archive/2018/05/an-unusual-idea-for-fixing-school-segregation/560930/)
   Wrote up the idea for a broad audience at the Atlantic, where I initially read about it.
 
+Usage
+----------
+
+**Install Docker and docker-compose**<br>
+Follow instructions [here](https://docs.docker.com/install/)
+
+**Build the container**<br>
+`docker-compose build` 
+<br>(this will take a while to download all the dependencies. Go grab tea.)
+
+**Enter the container**<br>
+`docker-compose run --rm project bash`
+<br> Now you'll have a bash session within the container
 
 ## What's done so far?
 - Convert DoE Civil Rights dataset of lon/lat school locations into 3d coordinates.
